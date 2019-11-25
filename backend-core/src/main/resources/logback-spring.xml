@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+    <!--application.yml 传送参数, 不能使用logback 自带的<property>标签-->
+    <!--TODO spring-cloud bug spring.application.name must in bootstrap.yml-->
+    <springProperty scope="context" name="logName" source="spring.application.name" defaultValue="springboot-quartz"/>
+    <springProperty scope="context" name="logDir" source="logback.logDir" defaultValue="/var/log/springboot-quartz"/>
+
+    <!--<property name="logback.logDir" value="/mnt/data01/logs/backend-web-service"/>-->
+    <!--<property name="logback.logName" value="backend"/>-->
+
+    <!--控制台样式根据场景区分-->
+    <springProfile name="default,dev">
+        <!--<pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+        <property name="CONSOLE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) %highlight([%line]) : %cyan(%msg%n)"/>
+    </springProfile>
+    <springProfile name="pro">
+        <property name="CONSOLE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %line : %msg%n"/>
+    </springProfile>
+
+    <contextName>${logName}</contextName>
+
+    <!--控制台输出配置 ConsoleAppender-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!--过滤器-->
+        <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+            <!--<level>ERROR</level>-->
+        <!--</filter>-->
+        <!--展示格式layout-->
+        <layout class ="ch.qos.logback.classic.PatternLayout">
+            <pattern>${CONSOLE_PATTERN}</pattern>
+        </layout>
+
+    </appender>
+
+    <!--输出INFO到文件-->
+    <appender name="fileInfo" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!--过滤器-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!--过滤 ERROR-->
+            <level>ERROR</level>
+            <!--匹配就禁止-->
+            <onMatch>DENY</onMatch>
+            <!--没有匹配就允许-->
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+
+        <!--日志名称，如果没有File 属性，那么只会使用FileNamePattern的文件路径规则
+        如果同时有<File>和<FileNamePattern>，那么当天日志是<File>，明天会自动把今天
+        的日志改名为今天的日期。即，<File> 的日志都是当天的。 -->
+        <File>${logDir}/${logName}.info.log</File>
+
+        <!--日志滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--文件路径,定义了日志的切分方式——把每一天的日志归档到一个文件中,以防止日志填满整个磁盘空间-->
+            <!--<fileNamePattern>${logDir}/${logName}.info.%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>-->
+            <fileNamePattern>${logDir}/archived/${logName}.info.%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <!--日志文件大小-->
+            <maxFileSize>300MB</maxFileSize>
+            <!--<maxFileSize>1KB</maxFileSize>-->
+            <!--只保留最近90天的日志-->
+            <maxHistory>90</maxHistory>
+            <!--用来指定日志文件的上限大小，那么到了这个值，就会删除旧的日志-->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+
+        <!--日志输出编码和格式-->
+        <encoder>
+            <charset>UTF-8</charset>
+            <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} %line - %msg%n</pattern>-->
+            <!--省略日期也可，文件名带有日期-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %line : %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--输出ERROR到文件-->
+    <appender name="fileError" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--如果只是想要 Error 级别的日志，那么需要过滤一下，默认是 info 级别的，ThresholdFilter-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>Error</level>
+        </filter>
+        <!--日志名称，如果没有File 属性，那么只会使用FileNamePattern的文件路径规则
+                如果同时有<File>和<FileNamePattern>，那么当天日志是<File>，明天会自动把今天
+                的日志改名为今天的日期。即，<File> 的日志都是当天的。
+            -->
+        <File>${logDir}/${logName}.error.log</File>
+        <!--滚动策略，按照大小时间滚动 SizeAndTimeBasedRollingPolicy-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--文件路径,定义了日志的切分方式——把每一天的日志归档到一个文件中,以防止日志填满整个磁盘空间-->
+            <!--<fileNamePattern>${logDir}/${logName}.error.%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>-->
+            <fileNamePattern>${logDir}/archived/${logName}.error.%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <!--日志文件大小-->
+            <maxFileSize>30MB</maxFileSize>
+            <!--<maxFileSize>1KB</maxFileSize>-->
+            <!--只保留最近90天的日志-->
+            <maxHistory>365</maxHistory>
+            <!--用来指定日志文件的上限大小，那么到了这个值，就会删除旧的日志-->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <!--日志输出编码格式化-->
+        <encoder>
+            <charset>UTF-8</charset>
+            <!--省略日期也可，文件名带有日期-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger %line : %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--指定最基础的日志输出级别-->
+    <root level="INFO">
+        <appender-ref ref="console"/>
+        <appender-ref ref="fileInfo"/>
+        <appender-ref ref="fileError"/>
+    </root>
+
+    <!--logger-->
+    <springProfile name="dev">
+        <logger name="com.andy" level="DEBUG" additivity="false">
+            <appender-ref ref="console"/>
+        </logger>
+    </springProfile>
+</configuration>

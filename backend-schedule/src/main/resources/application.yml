@@ -1,0 +1,18 @@
+server:
+  port: 9090
+spring:
+  profiles:
+    active: dev
+  application:
+    name: scheduler-service                                      #Quartz调度服务
+  datasource:
+    dynamic:
+      datasource:
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://127.0.0.1:3306/quartz_db?useUnicode=true&characterEncoding=utf-8&characterSetResults=utf8&autoReconnect=true&failOverReadOnly=false&useSSL=true&verifyServerCertificate=false&serverTimezone=GMT%2B8
+          username: root
+          password: root
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  typeAliasesPackage: com.andy.schedule.entity
