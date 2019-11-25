@@ -3,3 +3,6 @@
 
 如果你只是想要简单的SpringBoot整合Quartz调度,对定时任务进行 自定义逻辑,启动,暂停,恢复,删除,修改。 可以参考 :
 [https://github.com/KittyMi/springboot-quartz](https://github.com/KittyMi/springboot-quartz)
+
+
+swagger:http://127.0.0.1:9090/swagger-ui.html
