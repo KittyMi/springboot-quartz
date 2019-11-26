@@ -4,7 +4,6 @@
 如果你只是想要简单的SpringBoot整合Quartz调度,对定时任务进行 自定义逻辑,启动,暂停,恢复,删除,修改。 可以参考 :
 [https://github.com/KittyMi/springboot-quartz](https://github.com/KittyMi/springboot-quartz)
 
-swagger:http://127.0.0.1:9090/swagger-ui.html
 
 ##### 运行此项项目步骤：
 > 1.首先数据库建库建表 resources文件下有个quartz.sql文件
@@ -35,3 +34,5 @@ spring:
   Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 20 threads.
   Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
 ```
+SwaggerUI访问路径：
+[http://ip:port/swagger-ui.html](http://127.0.0.1:9090/swagger-ui.html)
